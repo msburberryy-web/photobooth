@@ -10,7 +10,6 @@
       background-repeat: no-repeat;
       position: relative;
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: linear-gradient(135deg, #fdf6f0, #ffeedd);
       padding: 20px;
       text-align: center;
       color: #333;
@@ -21,7 +20,7 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255,255,255,0.5);
       pointer-events: none;
       z-index: 0;
     }
@@ -37,15 +36,8 @@
       text-align: center;
       transition: 0.3s;
     }
-    .card:hover {
-      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #c96c4c;
-      font-size: 32px;
-      text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
-    }
+    .card:hover { box-shadow: 0 18px 45px rgba(0,0,0,0.25); }
+    h2 { margin-bottom: 20px; color: #c96c4c; font-size: 32px; text-shadow: 1px 1px 5px rgba(0,0,0,0.1); }
     input[type="file"], select {
       padding: 14px;
       border-radius: 12px;
@@ -60,13 +52,15 @@
     #templatePreview { max-width: 120px; margin-top: 15px; border: 2px solid #f0c8b0; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
     #videoWrapper { position: relative; display: inline-block; width: 100%; max-width: 480px; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.2); margin-top: 15px; }
     video, #overlayCanvas { width: 100%; height: auto; border-radius: 20px; display: block; object-fit: cover; transform: scaleX(-1); }
-    #countdown { font-size: 80px; font-weight: bold; color: #ff4c4c; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 2px 2px 12px rgba(0,0,0,0.3); }
+    #countdown { font-size: 80px; font-weight: bold; color: #ff4c4c; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 2px 2px 12px rgba(0,0,0,0.3); transition: all 0.3s; }
     .photoPreview { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-    .photoPreview img { width: 150px; height: 110px; object-fit: cover; border: 2px solid #ccc; border-radius: 12px; transition: 0.3s; }
-    .photoPreview img:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    .photoPreview img { width: 150px; height: 110px; object-fit: cover; border: 2px solid #ccc; border-radius: 12px; transition: 0.3s; transform: scaleX(-1); }
+    .photoPreview img:hover { transform: scale(1.05) scaleX(-1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
     button { padding: 16px 32px; font-size: 17px; background: linear-gradient(135deg, #c96c4c, #ff7f5f); color: white; border: none; border-radius: 18px; margin: 10px 5px 0 5px; cursor: pointer; transition: 0.4s; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     button:hover { background: linear-gradient(135deg, #b55a40, #ff5a3c); transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.25); }
     #finalPreview { max-width: 420px; border-radius: 18px; margin-top: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    .restartBtn { position: fixed; bottom: 30px; right: 30px; padding: 24px; border-radius: 50%; font-size: 20px; background: linear-gradient(135deg, #4c9cff, #2c6fff); color: white; box-shadow: 0 8px 25px rgba(0,0,0,0.25); cursor: pointer; transition: 0.3s; z-index: 1000; }
+    .restartBtn:hover { transform: scale(1.1); }
     @media (max-width: 600px) { .photoPreview img { width: 120px; height: 90px; } button { padding: 14px 24px; font-size: 16px; } #countdown { font-size: 60px; } }
   </style>
 </head>
@@ -75,55 +69,47 @@
 <h2>Amore Wedding Photobooth App</h2>
 
 <div class="card">
-    <h4>1. Upload Your Template PNG</h4>
-    <input type="file" id="templateUpload" accept="image/png">
-    <br>
-    <img id="templatePreview" style="display:none;">
+  <h4>1. Upload Your Template PNG</h4>
+  <input type="file" id="templateUpload" accept="image/png">
+  <br>
+  <img id="templatePreview" style="display:none;">
 </div>
-
-<p style="margin-top: 20px; font-size: 16px; color: #666;">
-    ဆိုရှယ်မီဒီယာတွေအပေါ်မှာ #AungMay112225_amorewedding သုံးပြီးမှျဝေပါ
-</p>
+<p style="margin-top: 20px; font-size: 16px; color: #666;">ဆိုရှယ်မီဒီယာတွေအပေါ်မှာ #AungMay112225_amorewedding သုံးပြီးမှျဝေပါ</p>
 
 <div class="card" id="cameraSection" style="display:none;">
-    <h4>2. Choose Camera</h4>
-    <select id="cameraSelect"></select>
-    <h4>3. Take Two Photos</h4>
-    <div id="videoWrapper">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="overlayCanvas"></canvas>
-        <div id="countdown"></div>
-    </div>
-
-<div class="photoPreview" id="photoPreview">
+  <h4>2. Choose Camera</h4>
+  <select id="cameraSelect"></select>
+  <h4>3. Take Two Photos</h4>
+  <div id="videoWrapper">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="overlayCanvas"></canvas>
+    <div id="countdown"></div>
+  </div>
+  <div class="photoPreview" id="photoPreview">
     <img id="photo1Preview" style="display:none;">
     <img id="photo2Preview" style="display:none;">
-</div>
-
-<button id="takePhoto">Take Photo</button>
-<button id="uploadPhoto">Or Upload Photo</button>
-<button id="generateFinal" style="display:none;">Generate Final Image</button>
-
-<canvas id="canvas" style="display:none;"></canvas>
-
+  </div>
+  <button id="takePhoto">Take Photo</button>
+  <button id="uploadPhoto">Or Upload Photo</button>
+  <button id="generateFinal" style="display:none;">Generate Final Image</button>
+  <canvas id="canvas" style="display:none;"></canvas>
 </div>
 
 <div class="card">
-    <h4>Final Image</h4>
-    <img id="finalPreview" style="display:none;">
-    <br>
-    <a id="downloadLink" style="display:none;" download="final_wedding_photo.png">
-        <button>Download Final Image</button>
-    </a>
+  <h4>Final Image</h4>
+  <img id="finalPreview" style="display:none;">
+  <br>
+  <a id="downloadLink" style="display:none;" download="final_wedding_photo.png">
+    <button>Download Final Image</button>
+  </a>
 </div>
 
 <script>
-const takePhotoBtn = document.getElementById("takePhoto");
-let restartBtn;
 let templateLoaded = false;
 let templateImg = new Image();
 let selectedStream;
 let photos = [];
+let restartBtn;
 
 const templateUpload = document.getElementById("templateUpload");
 const cameraSection = document.getElementById("cameraSection");
@@ -136,202 +122,172 @@ const downloadLink = document.getElementById("downloadLink");
 const photo1Preview = document.getElementById("photo1Preview");
 const photo2Preview = document.getElementById("photo2Preview");
 const generateFinalBtn = document.getElementById("generateFinal");
+const takePhotoBtn = document.getElementById("takePhoto");
 
-// Template size: 2" x 6"
 const templateWidthInches = 2;
 const templateHeightInches = 6;
-
-// Photo frames in inches
 const windowA = { x:0.25, y:0.8, w:1.51, h:1.51 };
 const windowB = { x:0.25, y:2.6, w:1.51, h:1.51 };
-
-// Convert inches to pixels
 function inToPxX(inches) { return inches / templateWidthInches * templateImg.width; }
 function inToPxY(inches) { return inches / templateHeightInches * templateImg.height; }
 
-// Load default template automatically
-window.onload = function () {
-    const defaultTemplate = "AungMayTemplate.png";
-    templateImg.src = defaultTemplate;
-    templateImg.onload = () => {
-        templateLoaded = true;
-        const preview = document.getElementById("templatePreview");
-        preview.src = defaultTemplate;
-        preview.style.display = "block";
-        preview.style.maxWidth = "120px";
-        cameraSection.style.display = "block";
-    };
+// Load default template
+window.onload = () => {
+  templateImg.src = "AungMayTemplate.png";
+  templateImg.onload = () => {
+    templateLoaded = true;
+    const preview = document.getElementById("templatePreview");
+    preview.src = templateImg.src;
+    preview.style.display = "block";
+    cameraSection.style.display = "block";
+  };
 };
 
 templateUpload.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    templateImg.src = url;
-    templateImg.onload = () => {
-        templateLoaded = true;
-        const preview = document.getElementById("templatePreview");
-        preview.src = url;
-        preview.style.display = "block";
-        cameraSection.style.display = "block";
-    };
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  templateImg.src = url;
+  templateImg.onload = () => {
+    templateLoaded = true;
+    const preview = document.getElementById("templatePreview");
+    preview.src = url;
+    preview.style.display = "block";
+    cameraSection.style.display = "block";
+  };
 });
 
-// Load cameras
 async function loadCameras() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(d => d.kind === "videoinput");
-    cameraSelect.innerHTML = "";
-    videoDevices.forEach((d,i)=> {
-        const option = document.createElement("option");
-        option.value = d.deviceId;
-        option.innerText = d.label || `Camera ${i+1}`;
-        cameraSelect.appendChild(option);
-    });
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const videoDevices = devices.filter(d => d.kind === "videoinput");
+  cameraSelect.innerHTML = "";
+  videoDevices.forEach((d,i) => {
+    const option = document.createElement("option");
+    option.value = d.deviceId;
+    option.innerText = d.label || `Camera ${i+1}`;
+    cameraSelect.appendChild(option);
+  });
 }
-
-// Start camera
 async function startCamera(deviceId) {
-    if(selectedStream) selectedStream.getTracks().forEach(t=>t.stop());
-    selectedStream = await navigator.mediaDevices.getUserMedia({
-        video:{deviceId: deviceId?{exact:deviceId}:undefined}
-    });
-    video.srcObject = selectedStream;
+  if(selectedStream) selectedStream.getTracks().forEach(t=>t.stop());
+  selectedStream = await navigator.mediaDevices.getUserMedia({video:{deviceId: deviceId?{exact:deviceId}:undefined}});
+  video.srcObject = selectedStream;
 }
 
-// Countdown
-function countdown(seconds){
-    return new Promise(resolve=>{
-        let current=seconds;
-        const interval=setInterval(()=>{
-            countdownEl.innerText=current>0?current:"";
-            current--;
-            if(current<0){ clearInterval(interval); resolve(); }
-        },1000);
-    });
+function countdown(seconds) {
+  return new Promise(resolve=>{
+    let current = seconds;
+    countdownEl.style.transform = "translate(-50%, -50%) scale(1)";
+    const interval = setInterval(()=>{
+      countdownEl.innerText = current>0?current:"";
+      countdownEl.style.transform = `translate(-50%, -50%) scale(${1 + 0.3*(seconds-current)})`;
+      current--;
+      if(current<0){ clearInterval(interval); resolve(); countdownEl.innerText=""; }
+    },1000);
+  });
 }
 
-// Capture mirrored photo
-async function capturePhoto(imgSource){
-    let img = new Image();
-    img.src = imgSource;
-    img.onload = () => {
-        const tempCanvas = document.createElement("canvas");
-        const tempCtx = tempCanvas.getContext("2d");
-        tempCanvas.width = img.width;
-        tempCanvas.height = img.height;
+async function capturePhoto(imgSource) {
+  const img = new Image();
+  img.src = imgSource;
+  img.onload = () => {
+    // Mirror the photo
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = img.width;
+    tempCanvas.height = img.height;
+    const ctx = tempCanvas.getContext("2d");
+    ctx.translate(img.width, 0);
+    ctx.scale(-1,1);
+    ctx.drawImage(img,0,0);
+    const mirroredDataURL = tempCanvas.toDataURL("image/png");
+    
+    const photoImg = new Image();
+    photoImg.src = mirroredDataURL;
+    photos.push(photoImg);
 
-        tempCtx.translate(img.width, 0);
-        tempCtx.scale(-1, 1);
-        tempCtx.drawImage(img, 0, 0, img.width, img.height);
-
-        const mirroredDataURL = tempCanvas.toDataURL("image/png");
-        const photoImg = new Image();
-        photoImg.src = mirroredDataURL;
-
-        photos.push(photoImg);
-
-        if (photos.length === 1) { photo1Preview.src = mirroredDataURL; photo1Preview.style.display = "block"; }
-        if (photos.length === 2) { photo2Preview.src = mirroredDataURL; photo2Preview.style.display = "block"; }
-        if(photos.length>=1) generateFinalBtn.style.display="inline-block";
-    };
+    if(photos.length ===1){ photo1Preview.src = mirroredDataURL; photo1Preview.style.display="block"; }
+    if(photos.length ===2){ photo2Preview.src = mirroredDataURL; photo2Preview.style.display="block"; }
+    if(photos.length>=1) generateFinalBtn.style.display="inline-block";
+  };
 }
 
-// Merge photos
 function mergeImages(){
-    if (!templateLoaded) return alert("Template not loaded yet. Please wait 1–2 seconds.");
-    if (photos.length < 2) return alert("Take two photos first.");
-    const outCanvas=document.createElement("canvas");
-    const outCtx=outCanvas.getContext("2d");
-    outCanvas.width=templateImg.width;
-    outCanvas.height=templateImg.height;
+  if(!templateLoaded) return alert("Template not loaded yet.");
+  if(photos.length<2) return alert("Take two photos first.");
+  const outCanvas = document.createElement("canvas");
+  const outCtx = outCanvas.getContext("2d");
+  outCanvas.width = templateImg.width;
+  outCanvas.height = templateImg.height;
 
-    [windowA, windowB].forEach((win,i)=>{
-        const photo = photos[i];
-        const frameW = inToPxX(win.w);
-        const frameH = inToPxY(win.h);
-        const scale = Math.max(frameW / photo.width, frameH / photo.height);
-        const sw = frameW / scale;
-        const sh = frameH / scale;
-        const sx = (photo.width - sw)/2;
-        const sy = (photo.height - sh)/2;
-        outCtx.drawImage(photo, sx, sy, sw, sh, inToPxX(win.x), inToPxY(win.y), frameW, frameH);
-    });
+  [windowA, windowB].forEach((win,i)=>{
+    const photo = photos[i];
+    const frameW = inToPxX(win.w);
+    const frameH = inToPxY(win.h);
+    const scale = Math.max(frameW / photo.width, frameH / photo.height);
+    const sw = frameW / scale;
+    const sh = frameH / scale;
+    const sx = (photo.width - sw)/2;
+    const sy = (photo.height - sh)/2;
+    outCtx.drawImage(photo, sx, sy, sw, sh, inToPxX(win.x), inToPxY(win.y), frameW, frameH);
+  });
 
-    outCtx.drawImage(templateImg, 0,0, templateImg.width, templateImg.height);
-
-    const finalURL=outCanvas.toDataURL("image/png");
-    finalPreview.src=finalURL;
-    finalPreview.style.display="block";
-    downloadLink.href=finalURL;
-    downloadLink.style.display="inline-block";
+  outCtx.drawImage(templateImg,0,0,templateImg.width, templateImg.height);
+  const finalURL = outCanvas.toDataURL("image/png");
+  finalPreview.src = finalURL;
+  finalPreview.style.display="block";
+  downloadLink.href = finalURL;
+  downloadLink.style.display="inline-block";
 }
 
 cameraSelect.addEventListener("change", e=>startCamera(e.target.value));
 
-takePhotoBtn.addEventListener("click", async()=>{
-    if(photos.length>=2) return;
-    takePhotoBtn.disabled = true;
-    takePhotoBtn.style.opacity = "0.5";
-    await countdown(6);
-
-    canvas.width=video.videoWidth;
-    canvas.height=video.videoHeight;
-    const ctx=canvas.getContext("2d");
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const dataURL = canvas.toDataURL("image/png");
-    await capturePhoto(dataURL);
-
-    if (photos.length < 2) { takePhotoBtn.disabled = false; takePhotoBtn.style.opacity = "1"; } 
-    else { takePhotoBtn.style.display = "none"; }
+takePhotoBtn.addEventListener("click", async ()=>{
+  if(photos.length>=2) return;
+  takePhotoBtn.disabled=true; takePhotoBtn.style.opacity="0.5";
+  await countdown(3);
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.translate(canvas.width,0);
+  ctx.scale(-1,1);
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  const dataURL = canvas.toDataURL("image/png");
+  await capturePhoto(dataURL);
+  if(photos.length<2){ takePhotoBtn.disabled=false; takePhotoBtn.style.opacity="1"; }
+  else{ takePhotoBtn.style.display="none"; }
 });
 
 document.getElementById("uploadPhoto").addEventListener("click",()=>{
-    if(photos.length>=2) return alert("You already have two photos!");
-    const input=document.createElement("input");
-    input.type="file";
-    input.accept="image/*";
-    input.onchange=e=>{
-        const file=e.target.files[0];
-        if(!file) return;
-        const url=URL.createObjectURL(file);
-        capturePhoto(url);
-    };
-    input.click();
+  if(photos.length>=2) return;
+  const input = document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const url = URL.createObjectURL(file); capturePhoto(url);
+  };
+  input.click();
 });
 
-generateFinalBtn.addEventListener("click", () => {
-    mergeImages();
-    if (!restartBtn) {
-        restartBtn = document.createElement("button");
-        restartBtn.innerText = "Restart";
-        restartBtn.style.cssText = `
-            padding: 24px 24px;
-            border-radius: 50%;
-            font-size: 20px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #4c9cff, #2c6fff);
-        `;
-        restartBtn.onclick = resetApp;
-        document.getElementById("cameraSection").appendChild(restartBtn);
-    } else { restartBtn.style.display = "inline-block"; }
+generateFinalBtn.addEventListener("click", ()=>{
+  mergeImages();
+  if(!restartBtn){
+    restartBtn = document.createElement("button");
+    restartBtn.className = "restartBtn";
+    restartBtn.innerText = "Restart";
+    restartBtn.onclick = resetApp;
+    document.body.appendChild(restartBtn);
+  } else { restartBtn.style.display="inline-block"; }
 });
 
-// Reset the app
-function resetApp() {
-    photos = [];
-    photo1Preview.style.display = "none";
-    photo2Preview.style.display = "none";
-    finalPreview.style.display = "none";
-    downloadLink.style.display = "none";
-    takePhotoBtn.style.display = "inline-block";
-    takePhotoBtn.disabled = false;
-    takePhotoBtn.style.opacity = "1";
-    if (restartBtn) restartBtn.style.display = "none";
-    generateFinalBtn.style.display = "none";
+function resetApp(){
+  photos = [];
+  photo1Preview.style.display="none";
+  photo2Preview.style.display="none";
+  finalPreview.style.display="none";
+  downloadLink.style.display="none";
+  takePhotoBtn.style.display="inline-block"; takePhotoBtn.disabled=false; takePhotoBtn.style.opacity="1";
+  generateFinalBtn.style.display="none";
+  if(restartBtn) restartBtn.style.display="none";
 }
 
 loadCameras().then(()=>startCamera());
