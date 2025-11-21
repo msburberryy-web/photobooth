@@ -354,7 +354,7 @@
             photo2Preview.src = mirroredDataURL;
             photo2Preview.style.display = "block";
         }
-        
+
         if(photos.length>=1) generateFinalBtn.style.display="inline-block";
       };
   }
@@ -398,6 +398,7 @@
 
   document.getElementById("takePhoto").addEventListener("click", async()=>{
       if(photos.length>=2) return alert("You already took two photos!");
+      
       // Disable button during countdown
       takePhotoBtn.disabled = true;
       takePhotoBtn.style.opacity = "0.5"; // visual cue
