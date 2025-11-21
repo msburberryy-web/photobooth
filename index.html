@@ -328,21 +328,21 @@
       img.src=imgSource;
       img.onload=()=>{
         // Draw mirrored image on a temporary canvas
-//        const tempCanvas = document.createElement("canvas");
-//        const ctx = tempCanvas.getContext("2d");
-//        tempCanvas.width = img.width;
-//        tempCanvas.height = img.height;
+        const tempCanvas = document.createElement("canvas");
+        const ctx = tempCanvas.getContext("2d");
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
 
-//        ctx.translate(img.width, 0); // move origin to top-right
-//        ctx.scale(-1, 1);            // flip horizontally
-//        ctx.drawImage(img, 0, 0, img.width, img.height);
+        ctx.translate(img.width, 0); // move origin to top-right
+        ctx.scale(-1, 1);            // flip horizontally
+        ctx.drawImage(img, 0, 0, img.width, img.height);
 
-//        const mirroredDataURL = tempCanvas.toDataURL("image/png");
+        const mirroredDataURL = tempCanvas.toDataURL("image/png");
         // Save mirrored image
-//        const photoImg = new Image();
-//        photoImg.src = mirroredDataURL;
+        const photoImg = new Image();
+        photoImg.src = mirroredDataURL;
 
-        photos.push(img);
+        photos.push(photoImg);
         
         // Show preview
         if (photos.length === 1) {
