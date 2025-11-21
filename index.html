@@ -3,7 +3,49 @@
 <html>
 <head>
   <style>
+    /* Example style for the template picker */
+    #templatePicker {
+      margin: 20px;
+      text-align: center;
+    }
+    #defaultTemplate {
+      max-width: 300px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #defaultTemplate:hover {
+      transform: scale(1.05);
+    }
     /* Stylish / Modern UI CSS */
+
+    /* Add this CSS somewhere in your <style> */
+    body {
+      /* background image — replace “Background_image” with the actual URL */
+      background-image: url("Background_image");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      /* Optional: add a slight overlay so the text is readable */
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.5); /* white translucent overlay */
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1; /* make sure card content stays above the overlay */
+    }
 
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -148,19 +190,26 @@
 
 <h2>Amore Wedding Photobooth App</h2>
 
-<div class="card">
+<div id="templatePicker">
     <h4>1. Upload Your Template PNG</h4>
-    <input type="file" id="templateUpload" accept="image/png">
+    <img
+      id="defaultTemplate"
+      src="./AungMayTemplate.png"
+      alt="Default Wedding Template"
+      onclick="onTemplateSelected('./AungMayTemplate.png')"
+    >
+    <p>Or upload your own template (in 2 x 6 inches)</p>
+    <input type="file" id="templateUpload" accept="image/png" onchange="onTemplateUpload(event)">
     <br>
     <img id="templatePreview" style="display:none;">
-</div>
+</div။
 
 <div class="card" id="cameraSection" style="display:none;">
     <h4>2. Choose Camera</h4>
     <select id="cameraSelect"></select>
 
 ```
-<h4>3. Take Two Photos</h4>
+<h4>3. ပုံနှစ်ပုံရိုက်ရန်</h4>
 <div id="videoWrapper">
     <video id="video" autoplay playsinline></video>
     <canvas id="overlayCanvas"></canvas>
@@ -172,12 +221,14 @@
     <img id="photo2Preview" style="display:none;">
 </div>
 
-<button id="takePhoto">Take Photo</button>
-<button id="uploadPhoto">Or Upload Photo</button>
-<button id="generateFinal" style="display:none;">Generate Final Image</button>
+<button id="takePhoto">ပုံရိုက်မည်</button>
+<button id="uploadPhoto">Or သိမ်းထားပြီးသားပုံတင်မည်</button>
+<button id="generateFinal" style="display:none;">Final Image ကိုထုတ်မည်</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
-```
+<p style="margin-top: 20px; font-size: 16px; color: #666;">
+    ဆိုရှယ်မီဒီယာတွေအပေါ်မှာ #AungMay112225_amorewedding သုံးပြီးမျှဝေပါ
+</p>
 
 </div>
 
@@ -191,149 +242,172 @@
 </div>
 
 <script>
-let templateImg = new Image();
-let selectedStream;
-let photos = [];
+  let selectedTemplate = null;
 
-const templateUpload = document.getElementById("templateUpload");
-const cameraSection = document.getElementById("cameraSection");
-const cameraSelect = document.getElementById("cameraSelect");
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const countdownEl = document.getElementById("countdown");
-const finalPreview = document.getElementById("finalPreview");
-const downloadLink = document.getElementById("downloadLink");
-const photo1Preview = document.getElementById("photo1Preview");
-const photo2Preview = document.getElementById("photo2Preview");
-const generateFinalBtn = document.getElementById("generateFinal");
+    function onTemplateSelected(url) {
+      selectedTemplate = url;
+      // Do whatever you need next, e.g. move to the next step
+      console.log("Template selected:", selectedTemplate);
+    }
 
-// Template size: 2" x 6"
-const templateWidthInches = 2;
-const templateHeightInches = 6;
+    function onTemplateUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      selectedTemplate = url;
+      // Optionally replace the preview image:
+      document.getElementById("defaultTemplate").src = url;
+      console.log("Template uploaded:", selectedTemplate);
+    }
 
-// Photo frames in inches
-const windowA = { x:0.25, y:0.8, w:1.51, h:1.51 };
-const windowB = { x:0.25, y:2.6, w:1.51, h:1.51 };
-
-// Convert inches to pixels
-function inToPxX(inches) { return inches / templateWidthInches * templateImg.width; }
-function inToPxY(inches) { return inches / templateHeightInches * templateImg.height; }
-
-templateUpload.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    templateImg.src = url;
-    const preview = document.getElementById("templatePreview");
-    preview.src = url;
-    preview.style.display = "block";
-    preview.style.maxWidth = "120px"; // small preview
-    cameraSection.style.display = "block";
-});
-
-// Load cameras
-async function loadCameras() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(d => d.kind === "videoinput");
-    cameraSelect.innerHTML = "";
-    videoDevices.forEach((d,i)=> {
-        const option = document.createElement("option");
-        option.value = d.deviceId;
-        option.innerText = d.label || `Camera ${i+1}`;
-        cameraSelect.appendChild(option);
+    // On page load, set the default template:
+    window.addEventListener("DOMContentLoaded", () => {
+      selectedTemplate = "./AungMayTemplate.png";
+      console.log("Default template set to:", selectedTemplate);
     });
-}
+  let templateImg = new Image();
+  let selectedStream;
+  let photos = [];
 
-// Start camera
-async function startCamera(deviceId) {
-    if(selectedStream) selectedStream.getTracks().forEach(t=>t.stop());
-    selectedStream = await navigator.mediaDevices.getUserMedia({video:{deviceId: deviceId?{exact:deviceId}:undefined}});
-    video.srcObject = selectedStream;
-}
+  const templateUpload = document.getElementById("templateUpload");
+  const cameraSection = document.getElementById("cameraSection");
+  const cameraSelect = document.getElementById("cameraSelect");
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const countdownEl = document.getElementById("countdown");
+  const finalPreview = document.getElementById("finalPreview");
+  const downloadLink = document.getElementById("downloadLink");
+  const photo1Preview = document.getElementById("photo1Preview");
+  const photo2Preview = document.getElementById("photo2Preview");
+  const generateFinalBtn = document.getElementById("generateFinal");
 
-// Countdown
-function countdown(seconds){
-    return new Promise(resolve=>{
-        let current=seconds;
-        const interval=setInterval(()=>{
-            countdownEl.innerText=current>0?current:"";
-            current--;
-            if(current<0){ clearInterval(interval); resolve(); }
-        },1000);
-    });
-}
+  // Template size: 2" x 6"
+  const templateWidthInches = 2;
+  const templateHeightInches = 6;
 
-// Capture photo
-async function capturePhoto(imgSource){
-    let img=new Image();
-    img.src=imgSource;
-    img.onload=()=>{
-        photos.push(img);
-        if(photos.length===1){ photo1Preview.src=imgSource; photo1Preview.style.display="block"; }
-        if(photos.length===2){ photo2Preview.src=imgSource; photo2Preview.style.display="block"; }
-        if(photos.length>=1) generateFinalBtn.style.display="inline-block";
-    };
-}
+  // Photo frames in inches
+  const windowA = { x:0.25, y:0.8, w:1.51, h:1.51 };
+  const windowB = { x:0.25, y:2.6, w:1.51, h:1.51 };
 
-// Merge photos to template with correct aspect ratio
-function mergeImages(){
-    if(!templateImg.src) return alert("Upload template first.");
-    if(photos.length<2) return alert("Take two photos first.");
+  // Convert inches to pixels
+  function inToPxX(inches) { return inches / templateWidthInches * templateImg.width; }
+  function inToPxY(inches) { return inches / templateHeightInches * templateImg.height; }
 
-    const outCanvas=document.createElement("canvas");
-    const outCtx=outCanvas.getContext("2d");
-    outCanvas.width=templateImg.width;
-    outCanvas.height=templateImg.height;
+  templateUpload.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      templateImg.src = url;
+      const preview = document.getElementById("templatePreview");
+      preview.src = url;
+      preview.style.display = "block";
+      preview.style.maxWidth = "120px"; // small preview
+      cameraSection.style.display = "block";
+  });
 
-    [windowA, windowB].forEach((win,i)=>{
-        const photo = photos[i];
-        const frameW = inToPxX(win.w);
-        const frameH = inToPxY(win.h);
-        const scale = Math.max(frameW / photo.width, frameH / photo.height);
-        const sw = frameW / scale;
-        const sh = frameH / scale;
-        const sx = (photo.width - sw)/2;
-        const sy = (photo.height - sh)/2;
-        outCtx.drawImage(photo, sx, sy, sw, sh, inToPxX(win.x), inToPxY(win.y), frameW, frameH);
-    });
+  // Load cameras
+  async function loadCameras() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === "videoinput");
+      cameraSelect.innerHTML = "";
+      videoDevices.forEach((d,i)=> {
+          const option = document.createElement("option");
+          option.value = d.deviceId;
+          option.innerText = d.label || `Camera ${i+1}`;
+          cameraSelect.appendChild(option);
+      });
+  }
 
-    outCtx.drawImage(templateImg, 0,0, templateImg.width, templateImg.height);
+  // Start camera
+  async function startCamera(deviceId) {
+      if(selectedStream) selectedStream.getTracks().forEach(t=>t.stop());
+      selectedStream = await navigator.mediaDevices.getUserMedia({video:{deviceId: deviceId?{exact:deviceId}:undefined}});
+      video.srcObject = selectedStream;
+  }
 
-    const finalURL=outCanvas.toDataURL("image/png");
-    finalPreview.src=finalURL;
-    finalPreview.style.display="block";
-    downloadLink.href=finalURL;
-    downloadLink.style.display="inline-block";
-}
+  // Countdown
+  function countdown(seconds){
+      return new Promise(resolve=>{
+          let current=seconds;
+          const interval=setInterval(()=>{
+              countdownEl.innerText=current>0?current:"";
+              current--;
+              if(current<0){ clearInterval(interval); resolve(); }
+          },1000);
+      });
+  }
 
-cameraSelect.addEventListener("change", e=>startCamera(e.target.value));
+  // Capture photo
+  async function capturePhoto(imgSource){
+      let img=new Image();
+      img.src=imgSource;
+      img.onload=()=>{
+          photos.push(img);
+          if(photos.length===1){ photo1Preview.src=imgSource; photo1Preview.style.display="block"; }
+          if(photos.length===2){ photo2Preview.src=imgSource; photo2Preview.style.display="block"; }
+          if(photos.length>=1) generateFinalBtn.style.display="inline-block";
+      };
+  }
 
-document.getElementById("takePhoto").addEventListener("click", async()=>{
-    if(photos.length>=2) return alert("You already took two photos!");
-    await countdown(3);
-    canvas.width=video.videoWidth;
-    canvas.height=video.videoHeight;
-    const ctx=canvas.getContext("2d");
-    ctx.drawImage(video,0,0,canvas.width,canvas.height);
-    capturePhoto(canvas.toDataURL("image/png"));
-});
+  // Merge photos to template with correct aspect ratio
+  function mergeImages(){
+      if(!templateImg.src) return alert("Upload template first.");
+      if(photos.length<2) return alert("Take two photos first.");
 
-document.getElementById("uploadPhoto").addEventListener("click",()=>{
-    if(photos.length>=2) return alert("You already have two photos!");
-    const input=document.createElement("input");
-    input.type="file";
-    input.accept="image/*";
-    input.onchange=e=>{
-        const file=e.target.files[0];
-        if(!file) return;
-        const url=URL.createObjectURL(file);
-        capturePhoto(url);
-    };
-    input.click();
-});
+      const outCanvas=document.createElement("canvas");
+      const outCtx=outCanvas.getContext("2d");
+      outCanvas.width=templateImg.width;
+      outCanvas.height=templateImg.height;
 
-generateFinalBtn.addEventListener("click", mergeImages);
-loadCameras().then(()=>startCamera());
+      [windowA, windowB].forEach((win,i)=>{
+          const photo = photos[i];
+          const frameW = inToPxX(win.w);
+          const frameH = inToPxY(win.h);
+          const scale = Math.max(frameW / photo.width, frameH / photo.height);
+          const sw = frameW / scale;
+          const sh = frameH / scale;
+          const sx = (photo.width - sw)/2;
+          const sy = (photo.height - sh)/2;
+          outCtx.drawImage(photo, sx, sy, sw, sh, inToPxX(win.x), inToPxY(win.y), frameW, frameH);
+      });
+
+      outCtx.drawImage(templateImg, 0,0, templateImg.width, templateImg.height);
+
+      const finalURL=outCanvas.toDataURL("image/png");
+      finalPreview.src=finalURL;
+      finalPreview.style.display="block";
+      downloadLink.href=finalURL;
+      downloadLink.style.display="inline-block";
+  }
+
+  cameraSelect.addEventListener("change", e=>startCamera(e.target.value));
+
+  document.getElementById("takePhoto").addEventListener("click", async()=>{
+      if(photos.length>=2) return alert("You already took two photos!");
+      await countdown(3);
+      canvas.width=video.videoWidth;
+      canvas.height=video.videoHeight;
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      capturePhoto(canvas.toDataURL("image/png"));
+  });
+
+  document.getElementById("uploadPhoto").addEventListener("click",()=>{
+      if(photos.length>=2) return alert("You already have two photos!");
+      const input=document.createElement("input");
+      input.type="file";
+      input.accept="image/*";
+      input.onchange=e=>{
+          const file=e.target.files[0];
+          if(!file) return;
+          const url=URL.createObjectURL(file);
+          capturePhoto(url);
+      };
+      input.click();
+  });
+
+  generateFinalBtn.addEventListener("click", mergeImages);
+  loadCameras().then(()=>startCamera());
 </script>
 
 </body>
