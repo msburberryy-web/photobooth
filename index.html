@@ -3,49 +3,7 @@
 <html>
 <head>
   <style>
-    /* Example style for the template picker */
-    #templatePicker {
-      margin: 20px;
-      text-align: center;
-    }
-    #defaultTemplate {
-      max-width: 300px;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    #defaultTemplate:hover {
-      transform: scale(1.05);
-    }
-    /* Stylish / Modern UI CSS */
-
-    /* Add this CSS somewhere in your <style> */
-    body {
-      /* background image — replace “Background_image” with the actual URL */
-      background-image: url("Background_image");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-
-      /* Optional: add a slight overlay so the text is readable */
-      position: relative;
-    }
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.5); /* white translucent overlay */
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .card {
-      position: relative;
-      z-index: 1; /* make sure card content stays above the overlay */
-    }
+    /* ===== Overall Stylish CSS ===== */
 
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -54,6 +12,7 @@
       text-align: center;
       color: #333;
       min-height: 100vh;
+      margin: 0;
     }
 
     h2 {
@@ -64,64 +23,69 @@
     }
 
     .card {
-      background: white;
-      border-radius: 25px;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-      padding: 25px;
+      background: #f7f7f7;
+      border-radius: 20px;
+      box-shadow: 8px 8px 16px rgba(0,0,0,0.1),
+                  -8px -8px 16px rgba(255,255,255,0.7);
+      padding: 30px;
       margin: 20px auto;
       max-width: 520px;
-      text-align: center;
-      transition: 0.3s;
+      position: relative;
+      transition: box-shadow 0.3s ease;
     }
 
     .card:hover {
-      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+      box-shadow: 12px 12px 24px rgba(0,0,0,0.15),
+                  -12px -12px 24px rgba(255,255,255,0.8);
     }
 
     input[type="file"], select {
       padding: 14px;
       border-radius: 12px;
-      border: 1px solid #ccc;
+      border: none;
+      background: #f0f0f0;
+      box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1),
+                  inset -4px -4px 8px rgba(255,255,255,0.7);
       margin-top: 15px;
       width: 85%;
       font-size: 16px;
       outline: none;
-      transition: 0.3s;
+      transition: box-shadow 0.3s ease;
     }
 
     input[type="file"]:hover, select:hover {
-      border-color: #c96c4c;
+      box-shadow: inset 2px 2px 6px rgba(0,0,0,0.1),
+                  inset -2px -2px 6px rgba(255,255,255,0.7);
     }
 
-    #templatePreview {
-      max-width: 120px;
+    #templatePreviewImg {
+      max-width: 300px;
+      border-radius: 15px;
       margin-top: 15px;
-      border: 2px solid #f0c8b0;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.1),
+                  -4px -4px 12px rgba(255,255,255,0.8);
     }
 
     #videoWrapper {
       position: relative;
-      display: inline-block;
       width: 100%;
       max-width: 480px;
+      margin: 20px auto;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      margin-top: 15px;
+      box-shadow: 8px 8px 20px rgba(0,0,0,0.15),
+                  -8px -8px 20px rgba(255,255,255,0.8);
     }
 
     video, #overlayCanvas {
       width: 100%;
       height: auto;
-      border-radius: 20px;
       display: block;
-      object-fit: cover; /* ensures video covers the container nicely */
+      object-fit: cover;
     }
 
     #countdown {
-      font-size: 80px;
+      font-size: 72px;
       font-weight: bold;
       color: #ff4c4c;
       position: absolute;
@@ -129,7 +93,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
-      text-shadow: 2px 2px 12px rgba(0,0,0,0.3);
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
     }
 
     .photoPreview {
@@ -140,43 +104,45 @@
     }
 
     .photoPreview img {
-      width: 150px;
-      height: 110px;
+      width: 140px;
+      height: 105px;
       object-fit: cover;
-      border: 2px solid #ccc;
       border-radius: 12px;
-      transition: 0.3s;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.1),
+                  -4px -4px 12px rgba(255,255,255,0.8);
+      transition: transform 0.3s;
     }
 
     .photoPreview img:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
 
     button {
       padding: 16px 32px;
       font-size: 17px;
-      background: linear-gradient(135deg, #c96c4c, #ff7f5f);
-      color: white;
       border: none;
       border-radius: 18px;
-      margin: 10px 5px 0 5px;
       cursor: pointer;
-      transition: 0.4s;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
+      /* gradient + soft shadow for modern call-to-action */
+      background: linear-gradient(135deg, #c96c4c, #ff7f5f);
+      box-shadow: 6px 6px 12px rgba(0,0,0,0.15),
+                  -6px -6px 12px rgba(255,255,255,0.8);
+      color: #fff;
     }
 
     button:hover {
-      background: linear-gradient(135deg, #b55a40, #ff5a3c);
       transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      box-shadow: 8px 8px 16px rgba(0,0,0,0.2),
+                  -8px -8px 16px rgba(255,255,255,0.9);
     }
 
     #finalPreview {
       max-width: 420px;
+      margin-top: 25px;
       border-radius: 18px;
-      margin-top: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      box-shadow: 8px 8px 20px rgba(0,0,0,0.15),
+                  -8px -8px 20px rgba(255,255,255,0.8);
     }
 
     @media (max-width: 600px) {
@@ -184,6 +150,7 @@
       button { padding: 14px 24px; font-size: 16px; }
       #countdown { font-size: 60px; }
     }
+
   </style>
 </head>
 <body>
@@ -191,25 +158,32 @@
 <h2>Amore Wedding Photobooth App</h2>
 
 <div id="templatePicker">
-    <h4>1. Upload Your Template PNG</h4>
+  <h4>1. PNG template ကို Upload လုပ်ပါ</h4>
     <img
-      id="defaultTemplate"
-      src="./AungMayTemplate.png"
-      alt="Default Wedding Template"
-      onclick="onTemplateSelected('./AungMayTemplate.png')"
+    id="templatePreviewImg"
+    src="./AungMayTemplate.png"
+    alt="Default Template"
+    style="max-width:300px; border: 2px solid #ccc; border-radius: 12px;"
     >
-    <p>Or upload your own template (in 2 x 6 inches)</p>
-    <input type="file" id="templateUpload" accept="image/png" onchange="onTemplateUpload(event)">
+    <input
+      type="file"
+      id="templateUpload"
+      accept="image/png"
+      style="display: none;"
+    >
+    <label for="templateUpload" style="display: block; margin-top: 10px;">
+    Or upload a different template(2 x 6 inches)
+    </label>
     <br>
     <img id="templatePreview" style="display:none;">
-</div။
+</div>
 
 <div class="card" id="cameraSection" style="display:none;">
     <h4>2. Choose Camera</h4>
     <select id="cameraSelect"></select>
 
 ```
-<h4>3. ပုံနှစ်ပုံရိုက်ရန်</h4>
+<h4>3. ပုံရိုက်ရန် (Default = 2 pics)</h4>
 <div id="videoWrapper">
     <video id="video" autoplay playsinline></video>
     <canvas id="overlayCanvas"></canvas>
@@ -221,13 +195,13 @@
     <img id="photo2Preview" style="display:none;">
 </div>
 
-<button id="takePhoto">ပုံရိုက်မည်</button>
-<button id="uploadPhoto">Or သိမ်းထားပြီးသားပုံတင်မည်</button>
-<button id="generateFinal" style="display:none;">Final Image ကိုထုတ်မည်</button>
+<button id="takePhoto" class="highlight-btn">ပုံရိုက်မည်</button>
+<button id="uploadPhoto">Or ပုံရွေးတင်မည်</button>
+<button id="generateFinal" class="highlight-btn" style="display:none;">Final Image ကိုထုတ်မည်</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
 <p style="margin-top: 20px; font-size: 16px; color: #666;">
-    ဆိုရှယ်မီဒီယာတွေအပေါ်မှာ #AungMay112225_amorewedding သုံးပြီးမျှဝေပါ
+    ဆိုရှယ်မီဒီယာတွေအပေါ်မှာ #AungMay112225_amorewedding သုံးပြီးမျှဝေနိုင်ပါတယ်
 </p>
 
 </div>
@@ -242,172 +216,133 @@
 </div>
 
 <script>
-  let selectedTemplate = null;
+  // ==== Variables / State ====
+  let selectedTemplate = './AungMayTemplate.png';  // default template path
+  let photos = [];  // store captured photos (Image objects or data URL)
 
-    function onTemplateSelected(url) {
-      selectedTemplate = url;
-      // Do whatever you need next, e.g. move to the next step
-      console.log("Template selected:", selectedTemplate);
+  // DOM elements
+  const templateUpload = document.getElementById('templateUpload');
+  const templatePreviewImg = document.getElementById('templatePreviewImg');
+  const takePhotoBtn = document.getElementById('takePhoto');
+  const generateFinalBtn = document.getElementById('generateFinal');
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const countdownEl = document.getElementById('countdown');
+
+  // ==== Functions ====
+
+  /**
+   * Handle template upload by user.
+   * Converts file to a blob URL and updates preview + selectedTemplate.
+   */
+  templateUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);  // create blob URL :contentReference[oaicite:1]{index=1}
+    selectedTemplate = objectUrl;
+    templatePreviewImg.src = objectUrl;
+
+    // Optionally: revoke the object URL later to avoid memory leak :contentReference[oaicite:2]{index=2}
+    // URL.revokeObjectURL(objectUrl);
+  });
+
+  /**
+   * Called when “Take Photo” button is clicked.
+   * Starts countdown, captures a frame, and stores it.
+   */
+  takePhotoBtn.addEventListener('click', async () => {
+    // Example: only allow 2 photos
+    if (photos.length >= 2) {
+      alert("Already took two photos");
+      return;
     }
 
-    function onTemplateUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      selectedTemplate = url;
-      // Optionally replace the preview image:
-      document.getElementById("defaultTemplate").src = url;
-      console.log("Template uploaded:", selectedTemplate);
-    }
+    // Countdown logic
+    await countdown(3);
 
-    // On page load, set the default template:
-    window.addEventListener("DOMContentLoaded", () => {
-      selectedTemplate = "./AungMayTemplate.png";
-      console.log("Default template set to:", selectedTemplate);
+    // Capture the frame from video into canvas
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas to data URL and store as image
+    const dataUrl = canvas.toDataURL('image/png');
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = () => {
+      photos.push(img);
+
+      // If you want, you can immediately enable “Generate Final” when you have enough photos
+      if (photos.length === 2) {
+        generateFinalBtn.style.display = 'inline-block';
+      }
+    };
+  });
+
+  /**
+   * Countdown timer that updates countdownEl.
+   * @param {number} seconds - how many seconds to count down
+   */
+  function countdown(seconds) {
+    return new Promise((resolve) => {
+      let current = seconds;
+      const interval = setInterval(() => {
+        countdownEl.innerText = current > 0 ? current : '';
+        current--;
+        if (current < 0) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 1000);
     });
-  let templateImg = new Image();
-  let selectedStream;
-  let photos = [];
+  }
 
-  const templateUpload = document.getElementById("templateUpload");
-  const cameraSection = document.getElementById("cameraSection");
-  const cameraSelect = document.getElementById("cameraSelect");
-  const video = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  const countdownEl = document.getElementById("countdown");
-  const finalPreview = document.getElementById("finalPreview");
-  const downloadLink = document.getElementById("downloadLink");
-  const photo1Preview = document.getElementById("photo1Preview");
-  const photo2Preview = document.getElementById("photo2Preview");
-  const generateFinalBtn = document.getElementById("generateFinal");
+  /**
+   * Merge the taken photos with the selected template.
+   * (This is a simplified version — adapt to your template / positioning logic.)
+   */
+  generateFinalBtn.addEventListener('click', () => {
+    if (!selectedTemplate) {
+      return alert("No template selected.");
+    }
+    if (photos.length < 2) {
+      return alert("Need two photos.");
+    }
 
-  // Template size: 2" x 6"
-  const templateWidthInches = 2;
-  const templateHeightInches = 6;
+    const outCanvas = document.createElement('canvas');
+    const outCtx = outCanvas.getContext('2d');
 
-  // Photo frames in inches
-  const windowA = { x:0.25, y:0.8, w:1.51, h:1.51 };
-  const windowB = { x:0.25, y:2.6, w:1.51, h:1.51 };
+    // Load the selected template image
+    const templateImg = new Image();
+    templateImg.src = selectedTemplate;
 
-  // Convert inches to pixels
-  function inToPxX(inches) { return inches / templateWidthInches * templateImg.width; }
-  function inToPxY(inches) { return inches / templateHeightInches * templateImg.height; }
+    templateImg.onload = () => {
+      // Set canvas size to template size
+      outCanvas.width = templateImg.width;
+      outCanvas.height = templateImg.height;
 
-  templateUpload.addEventListener("change", e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      templateImg.src = url;
-      const preview = document.getElementById("templatePreview");
-      preview.src = url;
-      preview.style.display = "block";
-      preview.style.maxWidth = "120px"; // small preview
-      cameraSection.style.display = "block";
+      // Example: draw photos — you’ll need real positioning logic
+      // Here we just draw photo[0] and photo[1] somewhere
+      outCtx.drawImage(photos[0], 0, 0, outCanvas.width / 2, outCanvas.height / 2);
+      outCtx.drawImage(photos[1], outCanvas.width / 2, 0, outCanvas.width / 2, outCanvas.height / 2);
+
+      // Then draw the template on top
+      outCtx.drawImage(templateImg, 0, 0);
+
+      const finalUrl = outCanvas.toDataURL('image/png');
+      // Show finalUrl in an <img>, or provide download link, etc.
+      const finalImgEl = document.getElementById('finalPreview');
+      finalImgEl.src = finalUrl;
+      finalImgEl.style.display = 'block';
+
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = finalUrl;
+      downloadLink.style.display = 'inline-block';
+    };
   });
 
-  // Load cameras
-  async function loadCameras() {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(d => d.kind === "videoinput");
-      cameraSelect.innerHTML = "";
-      videoDevices.forEach((d,i)=> {
-          const option = document.createElement("option");
-          option.value = d.deviceId;
-          option.innerText = d.label || `Camera ${i+1}`;
-          cameraSelect.appendChild(option);
-      });
-  }
-
-  // Start camera
-  async function startCamera(deviceId) {
-      if(selectedStream) selectedStream.getTracks().forEach(t=>t.stop());
-      selectedStream = await navigator.mediaDevices.getUserMedia({video:{deviceId: deviceId?{exact:deviceId}:undefined}});
-      video.srcObject = selectedStream;
-  }
-
-  // Countdown
-  function countdown(seconds){
-      return new Promise(resolve=>{
-          let current=seconds;
-          const interval=setInterval(()=>{
-              countdownEl.innerText=current>0?current:"";
-              current--;
-              if(current<0){ clearInterval(interval); resolve(); }
-          },1000);
-      });
-  }
-
-  // Capture photo
-  async function capturePhoto(imgSource){
-      let img=new Image();
-      img.src=imgSource;
-      img.onload=()=>{
-          photos.push(img);
-          if(photos.length===1){ photo1Preview.src=imgSource; photo1Preview.style.display="block"; }
-          if(photos.length===2){ photo2Preview.src=imgSource; photo2Preview.style.display="block"; }
-          if(photos.length>=1) generateFinalBtn.style.display="inline-block";
-      };
-  }
-
-  // Merge photos to template with correct aspect ratio
-  function mergeImages(){
-      if(!templateImg.src) return alert("Upload template first.");
-      if(photos.length<2) return alert("Take two photos first.");
-
-      const outCanvas=document.createElement("canvas");
-      const outCtx=outCanvas.getContext("2d");
-      outCanvas.width=templateImg.width;
-      outCanvas.height=templateImg.height;
-
-      [windowA, windowB].forEach((win,i)=>{
-          const photo = photos[i];
-          const frameW = inToPxX(win.w);
-          const frameH = inToPxY(win.h);
-          const scale = Math.max(frameW / photo.width, frameH / photo.height);
-          const sw = frameW / scale;
-          const sh = frameH / scale;
-          const sx = (photo.width - sw)/2;
-          const sy = (photo.height - sh)/2;
-          outCtx.drawImage(photo, sx, sy, sw, sh, inToPxX(win.x), inToPxY(win.y), frameW, frameH);
-      });
-
-      outCtx.drawImage(templateImg, 0,0, templateImg.width, templateImg.height);
-
-      const finalURL=outCanvas.toDataURL("image/png");
-      finalPreview.src=finalURL;
-      finalPreview.style.display="block";
-      downloadLink.href=finalURL;
-      downloadLink.style.display="inline-block";
-  }
-
-  cameraSelect.addEventListener("change", e=>startCamera(e.target.value));
-
-  document.getElementById("takePhoto").addEventListener("click", async()=>{
-      if(photos.length>=2) return alert("You already took two photos!");
-      await countdown(3);
-      canvas.width=video.videoWidth;
-      canvas.height=video.videoHeight;
-      const ctx=canvas.getContext("2d");
-      ctx.drawImage(video,0,0,canvas.width,canvas.height);
-      capturePhoto(canvas.toDataURL("image/png"));
-  });
-
-  document.getElementById("uploadPhoto").addEventListener("click",()=>{
-      if(photos.length>=2) return alert("You already have two photos!");
-      const input=document.createElement("input");
-      input.type="file";
-      input.accept="image/*";
-      input.onchange=e=>{
-          const file=e.target.files[0];
-          if(!file) return;
-          const url=URL.createObjectURL(file);
-          capturePhoto(url);
-      };
-      input.click();
-  });
-
-  generateFinalBtn.addEventListener("click", mergeImages);
-  loadCameras().then(()=>startCamera());
 </script>
 
 </body>
