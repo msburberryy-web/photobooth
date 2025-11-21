@@ -102,6 +102,7 @@
       border-radius: 20px;
       display: block;
       object-fit: cover; /* ensures video covers the container nicely */
+      transform: scaleX(-1); /* mirrors video horizontally */
     }
 
     #countdown {
@@ -130,6 +131,7 @@
       border: 2px solid #ccc;
       border-radius: 12px;
       transition: 0.3s;
+      transform: scaleX(-1); /* mirrors preview images */
     }
 
     .photoPreview img:hover {
@@ -219,6 +221,9 @@
 <script>
 
   const takePhotoBtn = document.getElementById("takePhoto");
+  // Add restart button dynamically
+  let restartBtn;
+
   let templateLoaded = false;
   let templateImg = new Image();
   let selectedStream;
@@ -323,12 +328,34 @@
       let img=new Image();
       img.src=imgSource;
       img.onload=()=>{
-          photos.push(img);
+        // Draw mirrored image on a temporary canvas
+        const tempCanvas = document.createElement("canvas");
+        const ctx = tempCanvas.getContext("2d");
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
 
-          if(photos.length===1){ photo1Preview.src=imgSource; photo1Preview.style.display="block"; }
-          if(photos.length===2){ photo2Preview.src=imgSource; photo2Preview.style.display="block"; }
+        ctx.translate(img.width, 0); // move origin to top-right
+        ctx.scale(-1, 1);            // flip horizontally
+        ctx.drawImage(img, 0, 0, img.width, img.height);
 
-          if(photos.length>=1) generateFinalBtn.style.display="inline-block";
+        const mirroredDataURL = tempCanvas.toDataURL("image/png");
+        // Save mirrored image
+        const photoImg = new Image();
+        photoImg.src = mirroredDataURL;
+
+        photos.push(img);
+        
+        // Show preview
+        if (photos.length === 1) {
+            photo1Preview.src = mirroredDataURL;
+            photo1Preview.style.display = "block";
+        }
+        if (photos.length === 2) {
+            photo2Preview.src = mirroredDataURL;
+            photo2Preview.style.display = "block";
+        }
+        
+        if(photos.length>=1) generateFinalBtn.style.display="inline-block";
       };
   }
 
@@ -373,8 +400,9 @@
       if(photos.length>=2) return alert("You already took two photos!");
       // Disable button during countdown
       takePhotoBtn.disabled = true;
+      takePhotoBtn.style.opacity = "0.5"; // visual cue
 
-      await countdown(3);
+      await countdown(6);
 
       canvas.width=video.videoWidth;
       canvas.height=video.videoHeight;
@@ -386,6 +414,7 @@
 
       if (photos.length < 2) {
         takePhotoBtn.disabled = false;
+        takePhotoBtn.style.opacity = "1";
       } else {
           // Hide button after 2 photos
           takePhotoBtn.style.display = "none";
@@ -406,8 +435,44 @@
       input.click();
   });
 
-  generateFinalBtn.addEventListener("click", mergeImages);
+  // After generating final image, show restart button
+  generateFinalBtn.addEventListener("click", () => {
+      mergeImages();
 
+      if (!restartBtn) {
+          restartBtn = document.createElement("button");
+          restartBtn.innerText = "Restart";
+          restartBtn.style.cssText = `
+              padding: 24px 24px;
+              border-radius: 50%;
+              font-size: 20px;
+              margin-top: 20px;
+              background: linear-gradient(135deg, #4c9cff, #2c6fff);
+          `;
+          restartBtn.onclick = resetApp;
+
+          document.getElementById("cameraSection").appendChild(restartBtn);
+      } else {
+          restartBtn.style.display = "inline-block";
+      }
+  });
+
+  // Reset the app to initial state
+  function resetApp() {
+      photos = [];
+      photo1Preview.style.display = "none";
+      photo2Preview.style.display = "none";
+      finalPreview.style.display = "none";
+      downloadLink.style.display = "none";
+
+      takePhotoBtn.style.display = "inline-block";
+      takePhotoBtn.disabled = false;
+      takePhotoBtn.style.opacity = "1";
+
+      if (restartBtn) restartBtn.style.display = "none";
+
+      generateFinalBtn.style.display = "none";
+  }
   loadCameras().then(()=>startCamera());
 </script>
 
