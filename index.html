@@ -218,6 +218,7 @@
 
 <script>
 
+  const takePhotoBtn = document.getElementById("takePhoto");
   let templateLoaded = false;
   let templateImg = new Image();
   let selectedStream;
@@ -264,7 +265,7 @@
       };
   };
   // ⬆⬆⬆ NEW
-  
+
   templateUpload.addEventListener("change", e => {
       const file = e.target.files[0];
       if (!file) return;
@@ -370,6 +371,9 @@
 
   document.getElementById("takePhoto").addEventListener("click", async()=>{
       if(photos.length>=2) return alert("You already took two photos!");
+      // Disable button during countdown
+      takePhotoBtn.disabled = true;
+
       await countdown(3);
 
       canvas.width=video.videoWidth;
@@ -379,6 +383,13 @@
 
       const dataURL = canvas.toDataURL("image/png");
       await capturePhoto(dataURL);
+
+      if (photos.length < 2) {
+        takePhotoBtn.disabled = false;
+      } else {
+          // Hide button after 2 photos
+          takePhotoBtn.style.display = "none";
+      }
   });
 
   document.getElementById("uploadPhoto").addEventListener("click",()=>{
